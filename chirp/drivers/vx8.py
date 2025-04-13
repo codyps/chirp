@@ -601,7 +601,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
     def get_features(self):
         rf = chirp_common.RadioFeatures()
         rf.has_dtcs_polarity = False
-        rf.valid_modes = list(MODES)
+        rf.valid_modes = list(MODES) ++ ["NFM"]
         rf.valid_tmodes = list(TMODES)
         rf.valid_duplexes = list(DUPLEX)
         rf.valid_tuning_steps = list(STEPS)
@@ -657,6 +657,8 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         if mem.duplex == "split":
             mem.offset = chirp_common.fix_rounded_step(mem.offset)
         mem.mode = MODES[_mem.mode]
+        if _mem.half_deviation and mem.mode == "FM":
+            mem.mode = "NFM"
         mem.dtcs = chirp_common.DTCS_CODES[_mem.dcs]
         mem.tuning_step = STEPS[_mem.tune_step]
         mem.power = POWER_LEVELS[3 - _mem.power]
@@ -702,9 +704,13 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
         _mem.tone = chirp_common.TONES.index(mem.rtone)
         _mem.tone_mode = TMODES.index(mem.tmode)
         _mem.duplex = DUPLEX.index(mem.duplex)
-        _mem.mode = MODES.index(mem.mode)
-        _mem.half_deviation = 0
-        _mem.mode = MODES.index(mem.mode)
+        if mem.mode == "NFM":
+            mode = "FM"
+            _mem.half_deviation = 1
+        else:
+            mode = mem.mode
+            _mem.half_deviation = 0
+        _mem.mode = MODES.index(mode)
         _mem.dcs = chirp_common.DTCS_CODES.index(mem.dtcs)
         _mem.tune_step = STEPS.index(mem.tuning_step)
         if mem.power:
