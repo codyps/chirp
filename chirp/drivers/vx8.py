@@ -680,8 +680,7 @@ class VX8Radio(yaesu_clone.YaesuCloneModeRadio):
 
         self._debank(mem)
 
-        if not mem.empty and not flag.valid:
-            _wipe_memory(_mem)
+        _wipe_memory(_mem)
 
         if mem.empty and flag.valid and not flag.used:
             flag.valid = False
